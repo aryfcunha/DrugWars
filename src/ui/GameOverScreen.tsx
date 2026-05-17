@@ -21,11 +21,19 @@ export function GameOverScreen({ state, dispatch }: Props) {
     if (name) localStorage.setItem('dw_name', name);
   }, [name]);
 
+  // For endless mode, days = days survived. For fixed, days = tour length bucket.
+  const submittedDays = state.mode === 'endless' ? Math.max(1, state.day) : state.totalDays;
+
   const onSubmit = async () => {
     if (!name.trim() || submitting) return;
     setSubmitting(true);
     setErr(null);
-    const res = await submitScore({ name: name.trim(), net_worth: score, days: state.totalDays });
+    const res = await submitScore({
+      name: name.trim(),
+      net_worth: score,
+      days: submittedDays,
+      mode: state.mode,
+    });
     setSubmitting(false);
     if (res.ok) setSubmitted(true);
     else setErr(res.error ?? 'Unknown error');
@@ -38,7 +46,11 @@ export function GameOverScreen({ state, dispatch }: Props) {
       </div>
 
       <div className="pixel-box w-full p-4 flex flex-col gap-2">
-        <Row label="DAYS" value={`${Math.min(state.day, state.totalDays)} / ${state.totalDays}`} />
+        <Row
+          label={state.mode === 'endless' ? 'SURVIVED' : 'DAYS'}
+          value={state.mode === 'endless' ? `${state.day} DAYS` : `${Math.min(state.day, state.totalDays)} / ${state.totalDays}`}
+        />
+        <Row label="MODE" value={state.mode === 'endless' ? 'ENDLESS' : `${state.totalDays}-DAY`} color="var(--color-accent-2)" />
         <Row label="CASH" value={money(state.cash)} />
         <Row label="BANK" value={money(state.bank)} />
         <Row label="DEBT" value={money(state.debt)} color="var(--color-danger)" />

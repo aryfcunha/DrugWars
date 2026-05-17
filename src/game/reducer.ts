@@ -2,15 +2,16 @@ import {
   DEBT_INTEREST, BANK_INTEREST, LOCATION_BY_ID, TRENCH_COAT_COST,
   TRENCH_COAT_BONUS, DRUGS, type DrugId,
 } from './data';
-import { type GameState, makeInitialState, inventoryFree, inventoryUsed, netWorth } from './state';
+import { type GameState, type GameMode, makeInitialState, inventoryFree, inventoryUsed, netWorth } from './state';
 import { makeRng, makeSeed, type Rng } from './rng';
 import { generateMarket, type MarketModifiers } from './market';
 import { rollEvent, type GeneratedEvent } from './events';
 import { newFight, fightRound, runRound, type CopFight } from './copFight';
 
 export type Action =
-  | { type: 'NEW_GAME'; totalDays: number; seed?: number }
+  | { type: 'NEW_GAME'; totalDays: number; mode: GameMode; seed?: number }
   | { type: 'START_GAME' }
+  | { type: 'RETIRE' }
   | { type: 'BUY'; drug: DrugId; qty: number }
   | { type: 'SELL'; drug: DrugId; qty: number }
   | { type: 'TRAVEL'; locationId: string }
@@ -37,9 +38,9 @@ export interface FullState extends GameState {
   fightLogIndex: number; // last index of fight.log player has seen
 }
 
-export function makeFullInitial(totalDays = 30, seed = makeSeed()): FullState {
+export function makeFullInitial(totalDays = 30, seed = makeSeed(), mode: GameMode = 'fixed'): FullState {
   return {
-    ...makeInitialState(seed, totalDays),
+    ...makeInitialState(seed, totalDays, mode),
     fight: null,
     pendingMarketMods: null,
     pendingEventGenerated: null,
@@ -86,8 +87,13 @@ function advanceArrival(s: FullState, rng: Rng): FullState {
   // 3) Generate prices.
   const loc = LOCATION_BY_ID[s.locationId];
   const hasDrugs = DRUGS.some(d => s.inv.drugs[d.id] > 0);
+  // In endless mode, cop risk ramps after day 30 (1.0× → up to 2.5×).
+  const dayMultiplier =
+    s.mode === 'endless'
+      ? Math.min(2.5, 1 + Math.max(0, s.day - 30) * 0.02)
+      : 1;
   const ev = rollEvent(rng, {
-    copRisk: loc.copRisk,
+    copRisk: Math.min(0.7, loc.copRisk * dayMultiplier),
     hasDrugs,
     guns: s.guns,
     cash: s.cash,
@@ -130,7 +136,11 @@ export function reducer(state: FullState, action: Action): FullState {
   const rng = makeRng(state.seed + state.day * 1000 + state.log.length);
   switch (action.type) {
     case 'NEW_GAME': {
-      return makeFullInitial(action.totalDays, action.seed ?? makeSeed());
+      return makeFullInitial(action.totalDays, action.seed ?? makeSeed(), action.mode);
+    }
+    case 'RETIRE': {
+      if (state.mode !== 'endless') return state;
+      return addLog({ ...state, phase: 'game_over' }, `Retired on day ${state.day} with ${netWorth(state) >= 0 ? '$' : '-$'}${Math.abs(netWorth(state)).toLocaleString()}.`);
     }
     case 'START_GAME': {
       // Generate first market (with possible event)
@@ -179,8 +189,8 @@ export function reducer(state: FullState, action: Action): FullState {
         debt: Math.round(state.debt * (1 + DEBT_INTEREST)),
         bank: Math.round(state.bank * (1 + BANK_INTEREST)),
       };
-      if (next.day > next.totalDays) {
-        // Game over by time
+      if (state.mode === 'fixed' && next.day > next.totalDays) {
+        // Game over by time (fixed mode only)
         return addLog({ ...next, phase: 'game_over' }, `Day ${state.totalDays} — your time is up.`);
       }
       next = addLog(next, `Day ${next.day} — traveled to ${LOCATION_BY_ID[action.locationId].name}.`);
@@ -289,7 +299,7 @@ export function reducer(state: FullState, action: Action): FullState {
       }, `Bought trench coat (+${TRENCH_COAT_BONUS} capacity)`);
     }
     case 'TO_LEADERBOARD': return { ...state, phase: 'leaderboard' };
-    case 'BACK_TO_TITLE': return makeFullInitial(state.totalDays, makeSeed());
+    case 'BACK_TO_TITLE': return makeFullInitial(state.totalDays, makeSeed(), state.mode);
   }
 }
 

@@ -14,7 +14,9 @@ interface Props {
 export function GameScreen({ state, dispatch }: Props) {
   const [showTravel, setShowTravel] = useState(false);
   const [showBronx, setShowBronx] = useState(false);
+  const [confirmRetire, setConfirmRetire] = useState(false);
   const inBronx = state.locationId === 'bronx';
+  const isEndless = state.mode === 'endless';
 
   return (
     <div className="flex flex-col gap-2 px-2 py-2 h-full w-full max-w-md mx-auto overflow-hidden">
@@ -41,6 +43,15 @@ export function GameScreen({ state, dispatch }: Props) {
             <button className="pixel-btn pixel-btn-primary" onClick={() => setShowTravel(true)}>
               ▶ TRAVEL
             </button>
+            {isEndless && (
+              <button
+                className="pixel-btn col-span-2"
+                style={{ background: 'var(--color-bg-2)', color: 'var(--color-danger)' }}
+                onClick={() => setConfirmRetire(true)}
+              >
+                ⚑ RETIRE (CASH OUT)
+              </button>
+            )}
           </div>
         </div>
 
@@ -49,6 +60,31 @@ export function GameScreen({ state, dispatch }: Props) {
 
       {showTravel && <TravelModal state={state} dispatch={dispatch} onClose={() => setShowTravel(false)} />}
       {showBronx && <BronxPanel state={state} dispatch={dispatch} onClose={() => setShowBronx(false)} />}
+      {confirmRetire && (
+        <RetireConfirm
+          onCancel={() => setConfirmRetire(false)}
+          onConfirm={() => { setConfirmRetire(false); dispatch({ type: 'RETIRE' }); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function RetireConfirm({ onCancel, onConfirm }: { onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70" onClick={onCancel}>
+      <div onClick={e => e.stopPropagation()} className="w-full max-w-md">
+        <div className="pixel-box p-4 flex flex-col gap-3">
+          <div className="pixel text-[12px] text-center text-[var(--color-accent-2)]">RETIRE?</div>
+          <div className="text-base">
+            End the run, submit your net worth, and call it a career. No going back.
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button className="pixel-btn" onClick={onCancel}>CANCEL</button>
+            <button className="pixel-btn pixel-btn-primary" onClick={onConfirm}>RETIRE</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

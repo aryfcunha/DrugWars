@@ -11,8 +11,8 @@ export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, () => makeFullInitial(30));
   const [titleLeaderboard, setTitleLeaderboard] = useState(false);
 
-  const onStart = (days: number) => {
-    dispatch({ type: 'NEW_GAME', totalDays: days });
+  const onStart = (mode: import('./game/state').GameMode, days: number) => {
+    dispatch({ type: 'NEW_GAME', totalDays: days, mode });
     dispatch({ type: 'START_GAME' });
   };
 

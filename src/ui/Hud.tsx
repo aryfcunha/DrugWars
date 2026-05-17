@@ -9,9 +9,10 @@ interface Props {
 
 export function Hud({ state }: Props) {
   const used = inventoryUsed(state);
+  const dayLabel = state.mode === 'endless' ? `${state.day} ∞` : `${state.day} / ${state.totalDays}`;
   return (
     <div className="pixel-box w-full p-3 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
-      <Row label="DAY" value={`${state.day} / ${state.totalDays}`} accent />
+      <Row label="DAY" value={dayLabel} accent />
       <Row label="LOC" value={LOCATION_BY_ID[state.locationId].name.toUpperCase()} accent />
       <Row label="CASH" value={money(state.cash)} color="var(--color-success)" />
       <Row label="DEBT" value={money(state.debt)} color="var(--color-danger)" />

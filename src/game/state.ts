@@ -22,13 +22,16 @@ export interface PlayerInv {
   drugs: Record<DrugId, number>;
 }
 
+export type GameMode = 'fixed' | 'endless';
+
 export interface GameState {
   phase: Phase;
   seed: number;
 
   // Time
+  mode: GameMode;
   day: number;          // 1-indexed
-  totalDays: number;    // e.g. 30
+  totalDays: number;    // For 'fixed': the tour length (15/30/60/90). For 'endless': 0 (ignored).
 
   // Player resources
   cash: number;
@@ -56,10 +59,11 @@ export function emptyInv(): PlayerInv {
   return { drugs: d };
 }
 
-export function makeInitialState(seed: number, totalDays: number): GameState {
+export function makeInitialState(seed: number, totalDays: number, mode: GameMode = 'fixed'): GameState {
   return {
     phase: 'title',
     seed,
+    mode,
     day: 1,
     totalDays,
     cash: START_CASH,

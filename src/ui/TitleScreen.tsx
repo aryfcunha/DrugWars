@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Cityscape } from './Cityscape';
 
 interface Props {
   onStart: (days: number) => void;
@@ -11,8 +12,8 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
   const [days, setDays] = useState(30);
 
   return (
-    <div className="flex flex-col items-center justify-between h-full w-full px-4 py-8 max-w-md mx-auto">
-      <div className="flex flex-col items-center gap-2 mt-2">
+    <div className="flex flex-col items-center justify-between h-full w-full px-4 py-6 max-w-md mx-auto gap-3">
+      <div className="flex flex-col items-center gap-1 mt-2">
         <div className="pixel text-3xl text-[var(--color-accent)] text-center leading-tight crt">
           DRUG<br/>WARS
         </div>
@@ -21,9 +22,8 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
         </div>
       </div>
 
-      <div className="pixel-box p-4 w-full">
-        <div className="pixel text-xs text-[var(--color-accent-2)] mb-3">SKULL FROM THE CALCULATOR</div>
-        <Skull />
+      <div className="pixel-box w-full overflow-hidden" style={{ padding: 4 }}>
+        <Cityscape />
       </div>
 
       <div className="w-full flex flex-col gap-3">
@@ -51,39 +51,6 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
       <div className="pixel text-[8px] text-[var(--color-ink-dim)] tracking-widest">
         © A PARODY GAME — NOT FOR PROFIT
       </div>
-    </div>
-  );
-}
-
-function Skull() {
-  // Big pixel skull using a CSS grid of squares
-  const pattern = [
-    '0011111111100',
-    '0111111111110',
-    '1111111111111',
-    '1100111110011',
-    '1100110110011',
-    '1111111111111',
-    '1111100111111',
-    '0111111111110',
-    '0011111111100',
-    '0010111110100',
-    '0000010100000',
-  ];
-  return (
-    <div className="mx-auto grid" style={{ gridTemplateColumns: 'repeat(13, 14px)' }}>
-      {pattern.flatMap((row, y) =>
-        row.split('').map((c, x) => (
-          <div
-            key={`${x}-${y}`}
-            style={{
-              width: 14, height: 14,
-              background: c === '1' ? '#e8e6ff' : 'transparent',
-              boxShadow: c === '1' ? 'inset -2px -2px 0 0 #8a86b8' : 'none',
-            }}
-          />
-        ))
-      )}
     </div>
   );
 }

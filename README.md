@@ -50,3 +50,11 @@ The site will be live at `https://<user>.github.io/DrugWars/`.
 - Tailwind CSS v4
 - Supabase JS client
 - Pixel rendering via "Press Start 2P" and "VT323"
+
+## Credits & acknowledgments
+
+- **Original concept:** *Drug Wars* by **John E. Dell** (1984), a text-based DOS game written for his teenage son. It went on to inspire countless ports — to BBS systems, mobile phones, and most famously, graphing calculators.
+- **TI-83/84 port:** the calculator version many of us played in high-school math class was the proximate inspiration for this remake.
+- **Reference source:** the TI-Basic listing in [mattmanning's gist](https://gist.github.com/mattmanning/1002653) was used to verify mechanics, price ranges, event probabilities, and the original event copy.
+
+This is a non-commercial parody/tribute. No affiliation with John E. Dell or any rights-holders.

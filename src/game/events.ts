@@ -133,11 +133,15 @@ function makeEvent(
       };
     }
     case 'paraquat': {
+      // Original Drug Wars semantics: DEA poisoned the marijuana crop.
+      // Player loses their entire weed stash and no weed is for sale today.
+      // (Earlier this set price ≈ $1 which created a buy-low/move-it exploit.)
       return {
         kind,
         title: 'PARAQUAT!',
-        message: 'The DEA sprayed paraquat on the weed supply — Weed is poisoned and worthless today.',
-        priceMult: { weed: 0 },
+        message: 'DEA paraquat sprayed the weed crop. Your stash is ruined and nobody is selling today.',
+        drugDelta: { weed: -100000 },
+        forcePresent: { weed: false },
       };
     }
     case 'lady_luck': {

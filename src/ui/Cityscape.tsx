@@ -1,6 +1,9 @@
-// 16-bit pixel art NYC 1984 skyline at night with a hooded trench-coat figure
-// walking the empty sidewalk. Rendered as inline SVG with crisp edges so it
-// scales sharply on any device.
+// One-point perspective alley scene — mid-90s pre-rendered-background vibe.
+// Vanishing point at center horizon; stepped buildings on both sides with
+// atmospheric haze (lighter & cooler with distance); pair of receding
+// streetlamps and neon signs with wet-pavement reflections on the asphalt;
+// hooded trench-coat figure walking away from the camera toward the
+// vanishing point; distant taxi taillight as a focal punctuation.
 
 export function Cityscape() {
   return (
@@ -10,118 +13,121 @@ export function Cityscape() {
       shapeRendering="crispEdges"
       style={{ width: '100%', height: 'auto', imageRendering: 'pixelated', display: 'block' }}
     >
-      {/* ===== SKY ===== */}
-      <rect x={0} y={0} width={128} height={80} fill="#0a0a14" />
+      {/* ===== SKY — banded gradient (urban light pollution toward horizon) ===== */}
+      <rect x={0} y={0}  width={128} height={8}  fill="#0a0816" />
+      <rect x={0} y={8}  width={128} height={8}  fill="#161034" />
+      <rect x={0} y={16} width={128} height={10} fill="#2a1850" />
+      <rect x={0} y={26} width={128} height={10} fill="#4a266e" />
+      <rect x={0} y={36} width={128} height={6}  fill="#6a3a7a" />
 
-      {/* Stars (1×1 dim pixels) */}
+      {/* Stars — only in higher sky */}
       {STARS.map(([x, y, c], i) => (
         <rect key={`s${i}`} x={x} y={y} width={1} height={1} fill={c} />
       ))}
 
-      {/* Moon */}
-      <rect x={102} y={6}  width={5} height={1} fill="#e8e6ff" />
-      <rect x={101} y={7}  width={7} height={1} fill="#e8e6ff" />
-      <rect x={101} y={8}  width={7} height={3} fill="#e8e6ff" />
-      <rect x={101} y={11} width={7} height={1} fill="#e8e6ff" />
-      <rect x={102} y={12} width={5} height={1} fill="#e8e6ff" />
-      {/* Moon craters */}
-      <rect x={103} y={8} width={1} height={1} fill="#8a86b8" />
-      <rect x={105} y={10} width={2} height={1} fill="#8a86b8" />
+      {/* Moon — low on horizon, warm amber (mid-90s noir palette) */}
+      <rect x={14} y={14} width={4} height={1} fill="#ffd87a" />
+      <rect x={13} y={15} width={6} height={1} fill="#ffd87a" />
+      <rect x={13} y={16} width={6} height={3} fill="#ffd87a" />
+      <rect x={13} y={19} width={6} height={1} fill="#ffd87a" />
+      <rect x={14} y={20} width={4} height={1} fill="#ffd87a" />
+      <rect x={15} y={17} width={1} height={1} fill="#c89030" />
+      <rect x={16} y={18} width={2} height={1} fill="#c89030" />
 
-      {/* ===== FAR SKYLINE (back buildings) ===== */}
-      {FAR_BUILDINGS.map((b, i) => (
-        <rect key={`fb${i}`} x={b[0]} y={b[1]} width={b[2]} height={b[3]} fill="#16172a" />
+      {/* ===== BUILDINGS — receding stepped silhouettes, atmospheric perspective ===== */}
+      {/* Far-back layer (lightest, hazy) */}
+      <rect x={46} y={26} width={12} height={16} fill="#3a3a6e" />
+      <rect x={70} y={26} width={12} height={16} fill="#3a3a6e" />
+
+      {/* Mid-far layer */}
+      <rect x={40} y={22} width={8}  height={20} fill="#2a2b55" />
+      <rect x={80} y={22} width={8}  height={20} fill="#2a2b55" />
+      <rect x={30} y={24} width={12} height={18} fill="#2a2b55" />
+      <rect x={86} y={24} width={12} height={18} fill="#2a2b55" />
+
+      {/* Mid layer */}
+      <rect x={14} y={18} width={20} height={24} fill="#1f2040" />
+      <rect x={94} y={18} width={20} height={24} fill="#1f2040" />
+
+      {/* Near layer (darkest, foreground buildings) */}
+      <rect x={0}   y={8}  width={18} height={34} fill="#0a0a18" />
+      <rect x={110} y={8}  width={18} height={34} fill="#0a0a18" />
+
+      {/* Building edge highlights (top of facade catches lamp/sky glow) */}
+      <rect x={0}   y={8}  width={18} height={1} fill="#2a2b55" />
+      <rect x={110} y={8}  width={18} height={1} fill="#2a2b55" />
+      <rect x={14}  y={18} width={20} height={1} fill="#3a3a6e" />
+      <rect x={94}  y={18} width={20} height={1} fill="#3a3a6e" />
+
+      {/* ===== WINDOWS — bigger & brighter on near layers, tiny & dim far back ===== */}
+      {NEAR_WINDOWS.map((w, i) => (
+        <rect key={`nw${i}`} x={w[0]} y={w[1]} width={w[2]} height={w[3]} fill={w[4]} />
       ))}
-
-      {/* Chrysler-style stepped crown at x=14..20 */}
-      <rect x={15} y={16} width={4} height={2} fill="#16172a" />
-      <rect x={16} y={14} width={2} height={2} fill="#16172a" />
-      <rect x={16} y={12} width={1} height={2} fill="#16172a" />
-
-      {/* Empire State antenna at x=55..59 */}
-      <rect x={56} y={18} width={2} height={4} fill="#16172a" />
-      <rect x={56} y={14} width={1} height={4} fill="#16172a" />
-      <rect x={56} y={10} width={1} height={4} fill="#1f2040" />
-
-      {/* WTC roof antenna hint */}
-      <rect x={41} y={12} width={1} height={2} fill="#1f2040" />
-
-      {/* Lit windows on far skyline */}
-      {WINDOWS.map(([x, y, c], i) => (
-        <rect key={`w${i}`} x={x} y={y} width={1} height={1} fill={c} />
-      ))}
-
-      {/* ===== MID-GROUND BUILDINGS ===== */}
-      {MID_BUILDINGS.map((b, i) => (
-        <rect key={`mb${i}`} x={b[0]} y={b[1]} width={b[2]} height={b[3]} fill="#1f2040" />
-      ))}
-
-      {/* Water tower on mid-ground building (x=18..22) */}
-      <rect x={18} y={37} width={5} height={1} fill="#3a3a6e" />
-      <rect x={19} y={34} width={3} height={3} fill="#1f2040" />
-      <rect x={19} y={34} width={3} height={1} fill="#3a3a6e" />
-      <rect x={20} y={31} width={1} height={3} fill="#3a3a6e" />
-
-      {/* Fire escape vertical lines (x=88..92) */}
-      <rect x={88} y={42} width={1} height={16} fill="#0a0a14" />
-      <rect x={94} y={42} width={1} height={16} fill="#0a0a14" />
-      <rect x={89} y={45} width={5} height={1} fill="#0a0a14" />
-      <rect x={89} y={49} width={5} height={1} fill="#0a0a14" />
-      <rect x={89} y={53} width={5} height={1} fill="#0a0a14" />
-
-      {/* Mid-ground windows (warmer, fewer) */}
       {MID_WINDOWS.map(([x, y, c], i) => (
         <rect key={`mw${i}`} x={x} y={y} width={1} height={1} fill={c} />
       ))}
+      {FAR_WINDOWS.map(([x, y, c], i) => (
+        <rect key={`fw${i}`} x={x} y={y} width={1} height={1} fill={c} opacity={0.7} />
+      ))}
 
-      {/* Neon sign — flickery red mark on mid-ground bldg */}
-      <rect x={32} y={49} width={6} height={2} fill="#ff3864" />
-      <rect x={32} y={51} width={6} height={1} fill="#b00033" />
-      {/* Faint glow halo around neon */}
-      <rect x={30} y={47} width={10} height={6} fill="#ff3864" opacity={0.12} />
+      {/* ===== NEON SIGNS on building facades ===== */}
+      {/* Left near — magenta vertical sign */}
+      <rect x={2}  y={18} width={2} height={14} fill="#ff00ff" />
+      <rect x={1}  y={17} width={4} height={1}  fill="#ff00ff" opacity={0.4} />
+      <rect x={1}  y={32} width={4} height={1}  fill="#ff00ff" opacity={0.4} />
+      <rect x={0}  y={16} width={6} height={18} fill="#ff00ff" opacity={0.10} />
 
-      {/* ===== ROAD ===== */}
-      <rect x={0} y={58} width={128} height={6} fill="#0a0a14" />
-      {/* curb line */}
-      <rect x={0} y={64} width={128} height={1} fill="#2a2b55" />
-      {/* faint road dashes (yellow, far perspective) */}
-      <rect x={42} y={61} width={4} height={1} fill="#3a2a05" />
-      <rect x={62} y={61} width={4} height={1} fill="#3a2a05" />
-      <rect x={82} y={61} width={4} height={1} fill="#3a2a05" />
+      {/* Right near — cyan horizontal */}
+      <rect x={117} y={22} width={9} height={2} fill="#00ffff" />
+      <rect x={116} y={21} width={11} height={1} fill="#00ffff" opacity={0.4} />
+      <rect x={116} y={24} width={11} height={1} fill="#00ffff" opacity={0.4} />
+      <rect x={114} y={18} width={14} height={10} fill="#00ffff" opacity={0.08} />
 
-      {/* ===== SIDEWALK ===== */}
-      <rect x={0} y={65} width={128} height={15} fill="#1a1a30" />
-      {/* sidewalk cracks */}
-      <rect x={12} y={70} width={4} height={1} fill="#0a0a14" />
-      <rect x={42} y={74} width={3} height={1} fill="#0a0a14" />
-      <rect x={92} y={72} width={5} height={1} fill="#0a0a14" />
+      {/* Left mid — hot pink small sign */}
+      <rect x={16} y={26} width={1} height={6} fill="#ff3864" />
+      <rect x={15} y={27} width={3} height={4} fill="#ff3864" opacity={0.2} />
 
-      {/* Manhole circle approx */}
-      <rect x={22} y={75} width={6} height={3} fill="#0a0a14" />
-      <rect x={23} y={74} width={4} height={1} fill="#0a0a14" />
-      <rect x={23} y={78} width={4} height={1} fill="#0a0a14" />
-      {/* steam from manhole */}
-      <rect x={24} y={72} width={2} height={1} fill="#3a3a6e" opacity={0.5} />
-      <rect x={23} y={71} width={4} height={1} fill="#3a3a6e" opacity={0.3} />
-      <rect x={25} y={70} width={2} height={1} fill="#3a3a6e" opacity={0.2} />
+      {/* Right mid — green sign */}
+      <rect x={95} y={24} width={3} height={2} fill="#34e07a" />
+      <rect x={94} y={23} width={5} height={4} fill="#34e07a" opacity={0.2} />
 
-      {/* ===== STREETLAMP (right side) ===== */}
-      {/* Glow halo (back-most so figure rim-light reads on top) */}
-      <rect x={92} y={42} width={14} height={14} fill="#ffcb05" opacity={0.06} />
-      <rect x={94} y={44} width={10} height={10} fill="#ffcb05" opacity={0.10} />
-      <rect x={96} y={46} width={6} height={6} fill="#ffcb05" opacity={0.15} />
-      {/* Pole */}
-      <rect x={99} y={50} width={1} height={20} fill="#2a2b55" />
-      {/* Lamp arm */}
-      <rect x={97} y={49} width={3} height={1} fill="#2a2b55" />
-      {/* Lamp head */}
-      <rect x={96} y={49} width={1} height={2} fill="#3a3a6e" />
-      <rect x={97} y={50} width={1} height={2} fill="#ffcb05" />
-      {/* Base */}
-      <rect x={98} y={70} width={3} height={1} fill="#2a2b55" />
+      {/* ===== ROAD — perspective trapezoid ===== */}
+      <polygon points="0,78 128,78 76,42 52,42" fill="#08080f" />
 
-      {/* ===== FIGURE (hooded trench coat, back to viewer) ===== */}
-      {FIGURE_PIXELS.map(([x, y, c], i) => (
+      {/* Wet-pavement reflections of neon signs (vertical streaks tapering) */}
+      {/* Magenta from left near sign */}
+      <rect x={4}  y={44} width={3} height={20} fill="#ff00ff" opacity={0.10} />
+      <rect x={5}  y={64} width={4} height={14} fill="#ff00ff" opacity={0.08} />
+      {/* Cyan from right near sign */}
+      <rect x={120} y={44} width={3} height={20} fill="#00ffff" opacity={0.10} />
+      <rect x={118} y={64} width={5} height={14} fill="#00ffff" opacity={0.08} />
+
+      {/* Lane center stripes — perspective, getting smaller toward vanishing */}
+      <rect x={62} y={45} width={4} height={1} fill="#a08020" opacity={0.4} />
+      <rect x={61} y={52} width={6} height={1} fill="#a08020" opacity={0.5} />
+      <rect x={60} y={62} width={8} height={2} fill="#c89030" opacity={0.6} />
+      <rect x={58} y={73} width={12} height={2} fill="#e0a040" opacity={0.7} />
+
+      {/* Distant TAXI taillights at vanishing point — focal punctuation */}
+      <rect x={62} y={42} width={1} height={1} fill="#ff3864" />
+      <rect x={65} y={42} width={1} height={1} fill="#ff3864" />
+      <rect x={61} y={43} width={1} height={1} fill="#ff3864" opacity={0.4} />
+      <rect x={66} y={43} width={1} height={1} fill="#ff3864" opacity={0.4} />
+
+      {/* ===== STREETLAMPS — paired, receding ===== */}
+      {/* Far pair (tiny) */}
+      <Lamp x={51} y={44} h={5}  size="far" />
+      <Lamp x={77} y={44} h={5}  size="far" />
+      {/* Mid pair */}
+      <Lamp x={37} y={50} h={12} size="mid" />
+      <Lamp x={91} y={50} h={12} size="mid" />
+      {/* Near pair (big, dominant) */}
+      <Lamp x={20} y={56} h={20} size="near" />
+      <Lamp x={108} y={56} h={20} size="near" />
+
+      {/* ===== FIGURE — walking AWAY toward vanishing point ===== */}
+      {/* Smaller, mid-distance on the road centerline */}
+      {FIGURE_PIXELS.map(([x, y, c, op], i) => (
         <rect
           key={`fg${i}`}
           x={FIGURE_OFFSET_X + x}
@@ -129,182 +135,156 @@ export function Cityscape() {
           width={1}
           height={1}
           fill={c}
+          opacity={op ?? 1}
         />
       ))}
+      {/* Long shadow stretching back from figure (lamp behind viewer) */}
+      <rect x={FIGURE_OFFSET_X + 1} y={FIGURE_OFFSET_Y + 14} width={6} height={1} fill="#000" opacity={0.6} />
+      <rect x={FIGURE_OFFSET_X + 2} y={FIGURE_OFFSET_Y + 15} width={4} height={1} fill="#000" opacity={0.4} />
 
-      {/* Tiny puff of breath/steam in front of hood */}
-      <rect x={FIGURE_OFFSET_X + 8} y={FIGURE_OFFSET_Y + 4} width={2} height={1} fill="#4a4b8a" opacity={0.5} />
-      <rect x={FIGURE_OFFSET_X + 9} y={FIGURE_OFFSET_Y + 5} width={1} height={1} fill="#4a4b8a" opacity={0.3} />
+      {/* ===== STEAM from a manhole grate in foreground ===== */}
+      <rect x={86} y={72} width={6} height={2} fill="#000" />
+      <rect x={87} y={71} width={4} height={1} fill="#000" />
+      <rect x={87} y={70} width={1} height={1} fill="#c0c8e0" opacity={0.5} />
+      <rect x={89} y={68} width={2} height={1} fill="#c0c8e0" opacity={0.5} />
+      <rect x={88} y={66} width={3} height={1} fill="#c0c8e0" opacity={0.35} />
+      <rect x={87} y={64} width={4} height={1} fill="#c0c8e0" opacity={0.22} />
+      <rect x={88} y={62} width={3} height={1} fill="#c0c8e0" opacity={0.12} />
 
-      {/* Faint fog band low across the street */}
-      <rect x={0} y={66} width={128} height={2} fill="#3a3a6e" opacity={0.08} />
+      {/* Foreground haze overlay (subtle warm wash near bottom) */}
+      <rect x={0} y={76} width={128} height={4} fill="#6a3a7a" opacity={0.05} />
     </svg>
   );
 }
 
-// ---- DATA ----
+// ===== Subcomponents =====
 
-// [x, y, color]
+function Lamp({ x, y, h, size }: { x: number; y: number; h: number; size: 'far' | 'mid' | 'near' }) {
+  // Lamp head + warm glow halo + pole down to street.
+  const halo =
+    size === 'far'
+      ? [{ w: 4, op: 0.18 }, { w: 2, op: 0.35 }]
+      : size === 'mid'
+        ? [{ w: 8, op: 0.10 }, { w: 5, op: 0.22 }, { w: 3, op: 0.40 }]
+        : [{ w: 14, op: 0.06 }, { w: 10, op: 0.12 }, { w: 6, op: 0.20 }, { w: 3, op: 0.45 }];
+  return (
+    <g>
+      {/* halo */}
+      {halo.map((h, i) => (
+        <rect
+          key={i}
+          x={x - h.w / 2}
+          y={y - h.w / 2}
+          width={h.w}
+          height={h.w}
+          fill="#ffcb05"
+          opacity={h.op}
+        />
+      ))}
+      {/* lamp head */}
+      <rect x={x - (size === 'near' ? 1 : 0)} y={y - 1} width={size === 'near' ? 2 : 1} height={size === 'near' ? 2 : 1} fill="#ffd87a" />
+      {/* pole */}
+      <rect x={x} y={y + 1} width={1} height={h} fill={size === 'near' ? '#1a1a2e' : size === 'mid' ? '#2a2b55' : '#3a3a6e'} />
+    </g>
+  );
+}
+
+// ===== Data =====
+
 const STARS: [number, number, string][] = [
-  [6, 4, '#8a86b8'], [12, 8, '#e8e6ff'], [22, 3, '#8a86b8'], [29, 9, '#8a86b8'],
-  [37, 5, '#e8e6ff'], [48, 4, '#8a86b8'], [56, 7, '#8a86b8'], [66, 3, '#e8e6ff'],
-  [74, 9, '#8a86b8'], [82, 4, '#8a86b8'], [88, 7, '#e8e6ff'], [95, 3, '#8a86b8'],
-  [115, 4, '#8a86b8'], [120, 9, '#8a86b8'], [125, 6, '#e8e6ff'], [3, 12, '#8a86b8'],
-  [16, 14, '#8a86b8'], [25, 13, '#e8e6ff'], [44, 12, '#8a86b8'], [70, 14, '#8a86b8'],
-  [90, 13, '#e8e6ff'], [110, 14, '#8a86b8'], [122, 15, '#8a86b8'],
+  [22, 4, '#8a86b8'], [38, 6, '#e8e6ff'], [54, 3, '#8a86b8'], [68, 7, '#e8e6ff'],
+  [82, 4, '#8a86b8'], [96, 6, '#e8e6ff'], [108, 3, '#8a86b8'],
+  [4, 10, '#8a86b8'], [44, 12, '#8a86b8'], [60, 11, '#e8e6ff'], [78, 14, '#8a86b8'],
+  [102, 12, '#8a86b8'], [124, 11, '#e8e6ff'],
 ];
 
-// [x, y, width, height]
-const FAR_BUILDINGS: [number, number, number, number][] = [
-  [0,  35, 4,  23], // edge
-  [4,  32, 5,  26],
-  [10, 28, 4,  30],
-  [14, 18, 6,  40], // Chrysler-style base
-  [21, 30, 6,  28],
-  [28, 24, 6,  34],
-  [35, 31, 4,  27],
-  [40, 14, 4,  44], // WTC north
-  [45, 14, 4,  44], // WTC south
-  [50, 28, 4,  30],
-  [55, 22, 5,  36], // Empire State base
-  [61, 30, 5,  28],
-  [67, 26, 5,  32],
-  [73, 24, 6,  34],
-  [80, 28, 5,  30],
-  [86, 23, 5,  35],
-  [92, 30, 5,  28],
-  [98, 22, 4,  36],
-  [103,28, 5,  30],
-  [109,25, 5,  33],
-  [115,29, 5,  29],
-  [121,24, 7,  34],
+// [x, y, width, height, color]
+// Near-layer windows: bigger, brighter, more detailed
+const NEAR_WINDOWS: [number, number, number, number, string][] = [
+  // Left near building (x=0..18)
+  [6, 10, 2, 2, '#ffcb05'],  [11, 10, 2, 2, '#4ad6ff'],
+  [6, 14, 2, 2, '#ffcb05'],  [11, 14, 2, 2, '#ffcb05'],
+  [6, 18, 2, 2, '#4ad6ff'],  [11, 18, 2, 2, '#ffcb05'],
+  [6, 22, 2, 2, '#ffcb05'],  [11, 22, 2, 2, '#ffcb05'],
+  [6, 26, 2, 2, '#ffcb05'],  [11, 26, 2, 2, '#4ad6ff'],
+  [6, 30, 2, 2, '#ffcb05'],  [11, 30, 2, 2, '#ffcb05'],
+  [6, 34, 2, 2, '#4ad6ff'],  [11, 34, 2, 2, '#ffcb05'],
+  [6, 38, 2, 2, '#ffcb05'],  [11, 38, 2, 2, '#ffcb05'],
+  // Right near building (x=110..128)
+  [114, 10, 2, 2, '#ffcb05'], [119, 10, 2, 2, '#4ad6ff'], [124, 10, 2, 2, '#ffcb05'],
+  [114, 14, 2, 2, '#ffcb05'], [119, 14, 2, 2, '#ffcb05'], [124, 14, 2, 2, '#ffcb05'],
+  [114, 18, 2, 2, '#4ad6ff'], [119, 18, 2, 2, '#ffcb05'], [124, 18, 2, 2, '#4ad6ff'],
+  [114, 22, 2, 2, '#ffcb05'], [119, 22, 2, 2, '#ffcb05'], [124, 22, 2, 2, '#ffcb05'],
+  [114, 26, 2, 2, '#ffcb05'], [119, 26, 2, 2, '#4ad6ff'], [124, 26, 2, 2, '#ffcb05'],
+  [114, 30, 2, 2, '#ffcb05'], [119, 30, 2, 2, '#ffcb05'], [124, 30, 2, 2, '#ffcb05'],
+  [114, 34, 2, 2, '#4ad6ff'], [119, 34, 2, 2, '#ffcb05'], [124, 34, 2, 2, '#ffcb05'],
+  [114, 38, 2, 2, '#ffcb05'], [119, 38, 2, 2, '#4ad6ff'], [124, 38, 2, 2, '#ffcb05'],
 ];
 
-// Lit windows on far skyline (warm + cool mix)
-const WINDOWS: [number, number, string][] = [
-  // edge bldg [0..4]
-  [1, 38, '#ffcb05'], [2, 42, '#4ad6ff'], [1, 50, '#ffcb05'],
-  // [4..9]
-  [5, 36, '#ffcb05'], [7, 40, '#ffcb05'], [5, 48, '#4ad6ff'], [7, 52, '#ffcb05'],
-  // [10..14]
-  [11, 32, '#ffcb05'], [12, 38, '#4ad6ff'], [11, 44, '#ffcb05'], [12, 50, '#ffcb05'], [11, 54, '#ffcb05'],
-  // Chrysler [14..20]
-  [15, 22, '#ffcb05'], [17, 26, '#ffcb05'], [15, 32, '#4ad6ff'], [18, 36, '#ffcb05'],
-  [15, 42, '#ffcb05'], [18, 48, '#ffcb05'], [16, 52, '#4ad6ff'],
-  // [21..27]
-  [22, 34, '#ffcb05'], [24, 38, '#ffcb05'], [26, 42, '#4ad6ff'], [22, 48, '#ffcb05'],
-  [25, 52, '#ffcb05'],
-  // [28..34]
-  [29, 28, '#ffcb05'], [31, 32, '#4ad6ff'], [33, 36, '#ffcb05'], [29, 42, '#ffcb05'],
-  [32, 46, '#ffcb05'], [29, 52, '#ffcb05'], [33, 54, '#4ad6ff'],
-  // [35..39]
-  [36, 34, '#ffcb05'], [37, 40, '#4ad6ff'], [36, 48, '#ffcb05'],
-  // WTC north [40..44]
-  [41, 18, '#ffcb05'], [42, 24, '#4ad6ff'], [41, 30, '#ffcb05'], [42, 36, '#ffcb05'],
-  [41, 42, '#ffcb05'], [42, 48, '#4ad6ff'], [41, 54, '#ffcb05'],
-  // WTC south [45..49]
-  [46, 20, '#ffcb05'], [47, 26, '#ffcb05'], [46, 32, '#4ad6ff'], [47, 38, '#ffcb05'],
-  [46, 44, '#ffcb05'], [47, 50, '#ffcb05'], [46, 54, '#4ad6ff'],
-  // [50..54]
-  [51, 32, '#ffcb05'], [52, 38, '#4ad6ff'], [51, 46, '#ffcb05'],
-  // Empire [55..60]
-  [56, 26, '#ffcb05'], [58, 30, '#ffcb05'], [56, 36, '#4ad6ff'], [58, 42, '#ffcb05'],
-  [56, 48, '#ffcb05'], [58, 52, '#ffcb05'],
-  // [61..66]
-  [62, 32, '#ffcb05'], [64, 38, '#4ad6ff'], [62, 48, '#ffcb05'],
-  // [67..72]
-  [68, 28, '#ffcb05'], [70, 32, '#ffcb05'], [69, 38, '#4ad6ff'], [71, 44, '#ffcb05'],
-  [68, 50, '#ffcb05'],
-  // [73..79]
-  [74, 26, '#4ad6ff'], [76, 30, '#ffcb05'], [78, 36, '#ffcb05'], [74, 42, '#ffcb05'],
-  [76, 48, '#ffcb05'], [78, 54, '#4ad6ff'],
-  // [80..85]
-  [81, 30, '#ffcb05'], [83, 36, '#4ad6ff'], [81, 44, '#ffcb05'], [83, 50, '#ffcb05'],
-  // [86..91]
-  [87, 24, '#ffcb05'], [89, 28, '#ffcb05'], [87, 34, '#4ad6ff'], [89, 40, '#ffcb05'],
-  [87, 46, '#ffcb05'], [89, 52, '#ffcb05'],
-  // [92..97]
-  [93, 32, '#4ad6ff'], [95, 38, '#ffcb05'], [93, 46, '#ffcb05'], [95, 52, '#ffcb05'],
-  // [98..102]
-  [99, 24, '#ffcb05'], [100, 30, '#4ad6ff'], [99, 38, '#ffcb05'], [100, 46, '#ffcb05'],
-  [99, 52, '#ffcb05'],
-  // [103..108]
-  [104, 30, '#ffcb05'], [106, 36, '#4ad6ff'], [104, 44, '#ffcb05'], [106, 50, '#ffcb05'],
-  // [109..114]
-  [110, 28, '#ffcb05'], [112, 32, '#ffcb05'], [110, 40, '#4ad6ff'], [112, 46, '#ffcb05'],
-  [110, 52, '#ffcb05'],
-  // [115..120]
-  [116, 32, '#ffcb05'], [118, 38, '#4ad6ff'], [116, 46, '#ffcb05'], [118, 52, '#ffcb05'],
-  // [121..127]
-  [122, 28, '#ffcb05'], [124, 34, '#ffcb05'], [126, 40, '#4ad6ff'], [122, 46, '#ffcb05'],
-  [124, 52, '#ffcb05'], [126, 56, '#ffcb05'],
-];
-
-// Mid-ground buildings (closer, slightly lighter)
-const MID_BUILDINGS: [number, number, number, number][] = [
-  [0,  42, 12, 16],
-  [14, 38, 14, 20],
-  [30, 42, 18, 16],  // hosts neon sign
-  [50, 40, 14, 18],
-  [66, 44, 16, 14],
-  [84, 38, 14, 20],  // hosts fire escape
-  [102,40, 16, 18],
-  [120,44, 8,  14],
-];
-
+// Mid-layer windows: 1×1, mixed colors
 const MID_WINDOWS: [number, number, string][] = [
-  [3, 46, '#ffcb05'], [6, 50, '#ffcb05'], [9, 54, '#4ad6ff'],
-  [16, 44, '#ffcb05'], [20, 48, '#ffcb05'], [24, 52, '#ffcb05'],
-  [33, 46, '#ffcb05'], [44, 48, '#4ad6ff'], [42, 54, '#ffcb05'],
-  [52, 46, '#ffcb05'], [56, 50, '#ffcb05'], [60, 54, '#4ad6ff'],
-  [68, 48, '#ffcb05'], [72, 52, '#ffcb05'], [78, 50, '#ffcb05'],
-  [86, 44, '#ffcb05'], [90, 48, '#ffcb05'], [92, 54, '#ffcb05'],
-  [105,46, '#ffcb05'], [110,52, '#ffcb05'], [114,48, '#4ad6ff'],
-  [122,48, '#ffcb05'], [125,52, '#ffcb05'],
+  // Left mid (x=14..34)
+  [20, 22, '#ffcb05'], [24, 22, '#ffcb05'], [28, 22, '#4ad6ff'], [32, 22, '#ffcb05'],
+  [20, 26, '#ffcb05'], [24, 26, '#4ad6ff'], [28, 26, '#ffcb05'], [32, 26, '#ffcb05'],
+  [20, 30, '#ffcb05'], [24, 30, '#ffcb05'], [28, 30, '#ffcb05'], [32, 30, '#4ad6ff'],
+  [20, 34, '#4ad6ff'], [24, 34, '#ffcb05'], [28, 34, '#ffcb05'], [32, 34, '#ffcb05'],
+  [20, 38, '#ffcb05'], [24, 38, '#ffcb05'], [28, 38, '#4ad6ff'], [32, 38, '#ffcb05'],
+  // Right mid (x=94..114)
+  [96, 22, '#ffcb05'], [100, 22, '#4ad6ff'], [104, 22, '#ffcb05'], [108, 22, '#ffcb05'], [112, 22, '#ffcb05'],
+  [96, 26, '#4ad6ff'], [100, 26, '#ffcb05'], [104, 26, '#ffcb05'], [108, 26, '#4ad6ff'], [112, 26, '#ffcb05'],
+  [96, 30, '#ffcb05'], [100, 30, '#ffcb05'], [104, 30, '#4ad6ff'], [108, 30, '#ffcb05'], [112, 30, '#ffcb05'],
+  [96, 34, '#ffcb05'], [100, 34, '#ffcb05'], [104, 34, '#ffcb05'], [108, 34, '#ffcb05'], [112, 34, '#4ad6ff'],
+  [96, 38, '#4ad6ff'], [100, 38, '#ffcb05'], [104, 38, '#ffcb05'], [108, 38, '#ffcb05'], [112, 38, '#ffcb05'],
+];
+
+// Far-layer windows: dim, sparser
+const FAR_WINDOWS: [number, number, string][] = [
+  [32, 28, '#ffcb05'], [36, 30, '#ffcb05'], [42, 28, '#4ad6ff'],
+  [44, 30, '#ffcb05'], [46, 32, '#ffcb05'], [50, 32, '#ffcb05'],
+  [52, 34, '#ffcb05'], [54, 32, '#4ad6ff'],
+  [74, 32, '#ffcb05'], [76, 34, '#4ad6ff'], [80, 28, '#ffcb05'],
+  [82, 30, '#ffcb05'], [84, 32, '#ffcb05'], [86, 30, '#ffcb05'],
+  [90, 28, '#4ad6ff'], [92, 30, '#ffcb05'],
 ];
 
 // ===== FIGURE =====
-// 10 wide × 20 tall. Drawn with the figure facing AWAY from viewer (we see
-// the back of a hooded trench coat). Right side has subtle rim light from
-// the streetlamp. Pixel data uses letters for color buckets:
-//   D = #0a0a14  (deepest shadow, inside-hood)
+// Walking AWAY from the viewer toward the vanishing point.
+// 8 wide × 16 tall, centered in the road. Smaller than the previous scene
+// because the figure is mid-distance, not foreground.
+//   D = #0a0a18  (deepest shadow / inside hood)
 //   M = #16172a  (silhouette body)
-//   R = #2a2b55  (rim light from lamp on right side)
+//   R = #2a2b55  (rim light from streetlamps - both shoulders)
 //   H = #1f2040  (coat midtone)
-const FIGURE_OFFSET_X = 50;
-const FIGURE_OFFSET_Y = 47;
+const FIGURE_OFFSET_X = 60;
+const FIGURE_OFFSET_Y = 50;
 
 const FIG_GLYPHS = [
-  '....MM....',  // 0
-  '...MMRR...',  // 1
-  '..MMMMMR..',  // 2  hood
-  '..MDDDDR..',  // 3
-  '..MDDDDR..',  // 4  inside hood (face hidden in shadow)
-  '..MMMMMR..',  // 5
-  '.MMMMMMMR.',  // 6  shoulders
-  '.MHHHHHHR.',  // 7  collar
-  '.MHHHHHHR.',  // 8  coat
-  '.MHHHHHHR.',  // 9
-  '.MHHHHHHR.',  //10
-  '.MHHHHHHR.',  //11
-  '.MHHHHHHR.',  //12
-  '.MMHHHHMR.',  //13  cinched waist
-  '.MMHHHHMR.',  //14
-  '.MMMHHMMR.',  //15  hem
-  '..MM..MR..',  //16  legs
-  '..MM..MR..',  //17
-  '..MM..MR..',  //18
-  '.MMM..MMM.',  //19  shoes
+  '...MM...',  // 0  hood crown
+  '..MMMM..',  // 1
+  '.RMMMMMR',  // 2
+  '.RMDDMMR',  // 3  hood w/ shadow
+  '.RMDDMMR',  // 4
+  '.RMMMMMR',  // 5  shoulders
+  'RHHHHHHR',  // 6  collar
+  'RHHHHHHR',  // 7  coat
+  'RHHHHHHR',  // 8
+  'RHHHHHHR',  // 9
+  'RHHHHHHR',  //10
+  'RMHHHHMR',  //11  hem cinch
+  '.MMHHMM.',  //12  hem flare
+  '..MMMM..',  //13  legs (close together — walking away pose)
+  '..MMMM..',  //14
+  '.MM..MM.',  //15  feet split (mid-stride)
 ];
 
 const COLOR_MAP: Record<string, string> = {
-  D: '#0a0a14',
+  D: '#0a0a18',
   M: '#16172a',
   R: '#2a2b55',
   H: '#1f2040',
 };
 
-const FIGURE_PIXELS: [number, number, string][] = FIG_GLYPHS.flatMap(
+const FIGURE_PIXELS: [number, number, string, number?][] = FIG_GLYPHS.flatMap(
   (row, y) => row.split('').map((ch, x) =>
     COLOR_MAP[ch] ? [x, y, COLOR_MAP[ch]] as [number, number, string] : null
   ).filter((p): p is [number, number, string] => p !== null)

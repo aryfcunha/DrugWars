@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code local settings + build pipeline artifacts
+.claude/
+scripts/downsample_debug.png

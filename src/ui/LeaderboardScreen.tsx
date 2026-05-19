@@ -60,7 +60,7 @@ export function LeaderboardScreen({ onBack }: Props) {
 
         {!SUPABASE_CONFIGURED ? (
           <div className="text-sm text-[var(--color-ink-dim)] text-center my-6">
-            Leaderboard not configured. Set VITE_SUPABASE_URL &amp; VITE_SUPABASE_ANON_KEY.
+            Hall of Fame not configured. Set VITE_SUPABASE_URL &amp; VITE_SUPABASE_ANON_KEY.
           </div>
         ) : loading ? (
           <div className="text-center my-6 text-[var(--color-ink-dim)] text-sm">

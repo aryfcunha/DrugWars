@@ -60,7 +60,7 @@ export function GameOverScreen({ state, dispatch }: Props) {
 
       {SUPABASE_CONFIGURED ? (
         <div className="pixel-box w-full p-3 flex flex-col gap-2">
-          <div className="pixel text-[10px] text-[var(--color-accent-2)]">SUBMIT TO LEADERBOARD</div>
+          <div className="pixel text-[10px] text-[var(--color-accent-2)]">SUBMIT TO HALL OF FAME</div>
           <div className="flex gap-2">
             <input
               type="text"
@@ -82,12 +82,12 @@ export function GameOverScreen({ state, dispatch }: Props) {
           {err && <div className="text-sm text-[var(--color-danger)]">{err}</div>}
         </div>
       ) : (
-        <div className="text-sm text-[var(--color-ink-dim)] text-center">Leaderboard offline (env not configured).</div>
+        <div className="text-sm text-[var(--color-ink-dim)] text-center">Hall of Fame offline (env not configured).</div>
       )}
 
       <div className="grid grid-cols-2 gap-2 w-full">
         <button className="pixel-btn pixel-btn-primary" onClick={() => dispatch({ type: 'BACK_TO_TITLE' })}>NEW GAME</button>
-        <button className="pixel-btn" onClick={() => dispatch({ type: 'TO_LEADERBOARD' })}>🏆 BOARD</button>
+        <button className="pixel-btn" onClick={() => dispatch({ type: 'TO_LEADERBOARD' })}>🏆 HALL OF FAME</button>
       </div>
     </div>
   );

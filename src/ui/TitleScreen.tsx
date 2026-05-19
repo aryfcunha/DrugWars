@@ -22,22 +22,34 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
 
   return (
     <div className="flex flex-col items-center justify-between h-full w-full px-4 py-6 max-w-md mx-auto gap-3">
+
+      {/* Title block */}
       <div className="flex flex-col items-center gap-1 mt-2">
-        <div className="pixel text-3xl text-[var(--color-accent)] text-center leading-tight crt">
-          DRUG<br/>WARS
+        <div
+          className="pixel text-3xl text-center leading-tight crt"
+          style={{ color: 'var(--color-accent)' }}
+        >
+          DRUG<br />WARS
         </div>
-        <div className="pixel text-[10px] text-[var(--color-ink-dim)] tracking-widest mt-2">
-          STREETS OF NYC, 1984
+        <div className="pixel text-[9px] tracking-widest mt-1" style={{ color: 'var(--color-amber)' }}>
+          ★ NYC 1984 ★
+        </div>
+        <div className="pixel text-[8px] tracking-widest" style={{ color: 'var(--color-ink-dim)' }}>
+          STREETS OF NEW YORK CITY
         </div>
       </div>
 
-      <div className="pixel-box w-full overflow-hidden" style={{ padding: 4 }}>
+      {/* Cityscape art panel */}
+      <div className="pixel-box w-full overflow-hidden" style={{ padding: 3 }}>
         <Cityscape />
       </div>
 
+      {/* Game config */}
       <div className="w-full flex flex-col gap-3">
-        <div className="pixel text-[10px] text-[var(--color-ink-dim)] text-center">
-          {selected.mode === 'endless' ? 'ENDLESS MODE — DIE OR RETIRE' : 'SELECT TOUR LENGTH'}
+        <div className="pixel text-[10px] text-center" style={{ color: 'var(--color-ink-dim)' }}>
+          {selected.mode === 'endless'
+            ? '— ENDLESS MODE: DIE OR RETIRE —'
+            : '— SELECT TOUR LENGTH —'}
         </div>
         <div className="grid grid-cols-5 gap-1.5">
           {TOUR_OPTIONS.map(opt => (
@@ -52,16 +64,25 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
           ))}
         </div>
 
-        <button className="pixel-btn pixel-btn-primary mt-2" onClick={() => onStart(selected.mode, selected.days)}>
+        <button
+          className="pixel-btn pixel-btn-primary mt-1"
+          onClick={() => onStart(selected.mode, selected.days)}
+        >
           ▶ START GAME
         </button>
         <button className="pixel-btn" onClick={onLeaderboard}>
-          🏆 LEADERBOARD
+          🏆 HALL OF FAME
         </button>
       </div>
 
-      <div className="pixel text-[8px] text-[var(--color-ink-dim)] tracking-widest">
-        © A PARODY GAME — NOT FOR PROFIT
+      {/* Footer */}
+      <div className="flex flex-col items-center gap-0.5">
+        <div className="pixel text-[7px]" style={{ color: 'var(--color-ink-dim)' }}>
+          © A PARODY GAME — NOT FOR PROFIT
+        </div>
+        <div className="pixel text-[7px]" style={{ color: 'var(--color-border)' }}>
+          BUY LOW · SELL HIGH · DON'T GET CAUGHT
+        </div>
       </div>
     </div>
   );

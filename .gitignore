@@ -26,3 +26,6 @@ dist-ssr
 # Claude Code local settings + build pipeline artifacts
 .claude/
 scripts/downsample_debug.png
+
+# AI training runs
+scripts/ai/runs/

@@ -21,7 +21,8 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
   const [selected, setSelected] = useState<TourOption>(TOUR_OPTIONS[1]);
 
   return (
-    <div className="flex flex-col items-center h-full w-full px-4 py-4 max-w-md mx-auto gap-3 overflow-y-auto">
+    <div className="h-full w-full overflow-y-auto">
+    <div className="flex flex-col items-center min-h-full w-full px-4 py-4 max-w-md mx-auto gap-3">
 
       {/* Title block */}
       <div className="flex flex-col items-center gap-1 mt-2">
@@ -89,6 +90,7 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
           BUY LOW · SELL HIGH · DON'T GET CAUGHT
         </div>
       </div>
+    </div>
     </div>
   );
 }

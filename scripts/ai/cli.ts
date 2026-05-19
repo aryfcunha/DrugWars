@@ -12,6 +12,8 @@
 
 import { randomAgent, greedyAgent, mctsAgent, type Agent } from './agents.ts';
 import { evalAgent, formatSummary } from './eval.ts';
+import { azAgent } from './agent_az.ts';
+import { loadNet } from './nn.ts';
 
 function arg(name: string, def?: string): string | undefined {
   const i = process.argv.indexOf(`--${name}`);
@@ -22,11 +24,16 @@ function flag(name: string): boolean {
   return process.argv.includes(`--${name}`);
 }
 
-function makeAgent(kind: string, opts: { sims?: number; seed?: number }): Agent {
+function makeAgent(kind: string, opts: { sims?: number; seed?: number; netPath?: string }): Agent {
   switch (kind) {
     case 'random':  return randomAgent(opts.seed ?? 0xC0FFEE);
     case 'greedy':  return greedyAgent();
     case 'mcts':    return mctsAgent({ simulations: opts.sims ?? 1500 });
+    case 'az': {
+      if (!opts.netPath) throw new Error('--az requires --net <path>');
+      const net = loadNet(opts.netPath);
+      return azAgent(net, { simulations: opts.sims ?? 200 });
+    }
     default: throw new Error(`unknown agent: ${kind}`);
   }
 }
@@ -38,11 +45,12 @@ async function cmdEval() {
   const sims = parseInt(arg('sims', '1500')!, 10);
   const which = (arg('agent') ?? 'all').toLowerCase();
   const mode = (arg('mode', 'fixed') as 'fixed' | 'endless');
+  const netPath = arg('net');
 
   const seeds = Array.from({ length: n }, (_, i) => seedBase + i);
   const agents: Agent[] = which === 'all'
     ? [randomAgent(seedBase), greedyAgent(), mctsAgent({ simulations: sims })]
-    : [makeAgent(which, { sims, seed: seedBase })];
+    : [makeAgent(which, { sims, seed: seedBase, netPath })];
 
   console.log(`days=${days} mode=${mode} n=${n} seeds=${seeds[0]}..${seeds.at(-1)}`);
   for (const a of agents) {
@@ -58,8 +66,12 @@ async function main() {
   switch (cmd) {
     case 'eval':   return cmdEval();
     case 'train':  return import('./curriculum.ts').then(m => m.run());
+    case 'az':     return import('./iterate.ts').then(() => { /* iterate.ts runs main() at import time */ });
     default:
-      console.error(`usage: tsx scripts/ai/cli.ts {eval|train} [--days N] [--n N] [--agent random|greedy|mcts|all] [--sims N] [--mode fixed|endless]`);
+      console.error(`usage: tsx scripts/ai/cli.ts {eval|train|az}
+  eval  [--days N] [--n N] [--agent random|greedy|mcts|az|all] [--sims N] [--net path.json] [--mode fixed|endless]
+  train [--only K] [--quick] [--submit]
+  az    [--days N] [--iters K] [--games G] [--sims S] [--eval-n N] [--eval-sims S] [--load path.json]`);
       process.exit(1);
   }
 }

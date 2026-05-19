@@ -21,7 +21,7 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
   const [selected, setSelected] = useState<TourOption>(TOUR_OPTIONS[1]);
 
   return (
-    <div className="flex flex-col items-center justify-between h-full w-full px-4 py-6 max-w-md mx-auto gap-3">
+    <div className="flex flex-col items-center h-full w-full px-4 py-4 max-w-md mx-auto gap-3 overflow-y-auto">
 
       {/* Title block */}
       <div className="flex flex-col items-center gap-1 mt-2">
@@ -39,8 +39,12 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
         </div>
       </div>
 
-      {/* Cityscape art panel */}
-      <div className="pixel-box w-full overflow-hidden" style={{ padding: 3 }}>
+      {/* Cityscape art panel — preserves the image's native aspect ratio so
+          the full frame is always visible (never cropped by flex shrinking) */}
+      <div
+        className="pixel-box w-full overflow-hidden shrink-0"
+        style={{ padding: 3, aspectRatio: '344 / 192' }}
+      >
         <Cityscape />
       </div>
 
@@ -75,8 +79,9 @@ export function TitleScreen({ onStart, onLeaderboard }: Props) {
         </button>
       </div>
 
-      {/* Footer */}
-      <div className="flex flex-col items-center gap-0.5">
+      {/* Footer — mt-auto pushes it to the bottom on tall viewports while
+          letting it sit naturally below the buttons on short ones */}
+      <div className="flex flex-col items-center gap-0.5 mt-auto">
         <div className="pixel text-[7px]" style={{ color: 'var(--color-ink-dim)' }}>
           © A PARODY GAME — NOT FOR PROFIT
         </div>

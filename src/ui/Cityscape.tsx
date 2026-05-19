@@ -8,7 +8,8 @@ export function Cityscape() {
       alt="NYC noir cityscape"
       style={{
         width: '100%',
-        height: 'auto',
+        height: '100%',
+        objectFit: 'contain',
         display: 'block',
         imageRendering: 'pixelated',
       }}

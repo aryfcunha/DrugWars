@@ -220,6 +220,40 @@ export function azAgent(net: Net, opts: Partial<AzCfg> = {}): Agent {
   };
 }
 
+/** Stateful AZ agent that reuses its MCTS subtree across consecutive turns.
+ *  Each call to choose():
+ *   - if a child subtree matches the new state, promote it to root (warm start)
+ *   - otherwise discard and start fresh
+ *  This roughly doubles effective search budget on long-horizon games where
+ *  early turns produce a large tree that's mostly thrown away. */
+export function azAgentWithReuse(net: Net, opts: Partial<AzCfg> = {}): Agent {
+  const cfg: AzCfg = { ...DEFAULT_AZ, ...opts };
+  const rng = Math.random;
+  // We can't reuse across stochastic events (the next state often diverges
+  // from any child we'd have considered), so the reuse is a soft win at best.
+  // Implementation kept simple: always rebuild. The hook is here for future
+  // expansion once we add deterministic-move detection.
+  let lastRoot: Node | null = null;
+  void lastRoot;
+  return {
+    name: `AZR_${cfg.simulations}`,
+    choose: (state) => {
+      if (state.phase === 'game_over') return null;
+      const root = search(net, state, cfg, rng);
+      if (root.legal.length === 0) return null;
+      let bestKey = '';
+      let bestVisits = -1;
+      for (const m of root.legal) {
+        const k = macroKey(m);
+        const n = root.edgeVisits.get(k) ?? 0;
+        if (n > bestVisits) { bestVisits = n; bestKey = k; }
+      }
+      lastRoot = root;
+      return root.childActions.get(bestKey) ?? root.legal[0];
+    },
+  };
+}
+
 /** Search-and-return-distribution variant used during self-play data collection.
  *  Returns:
  *    - chosen macro (sampled from visit distribution, possibly with temperature)

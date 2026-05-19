@@ -31,6 +31,16 @@ npm run ai:az -- --days 5 --iters 8 --games 25 --sims 200 --epochs 4 --eval-sims
 # v2: evaluate a trained network
 npm run ai:eval -- --days 3 --n 30 --agent az --sims 200 \
   --net scripts/ai/runs/az-net-3D-<timestamp>.json
+
+# v3: greedy bootstrap (250 games, ~1 sec, drops policy loss to ~0.85)
+npx tsx scripts/ai/pretrain.ts --games 250 --epochs 8 --days 3,5,10,15
+
+# v3: full chained curriculum with weight transfer 3D→5D→10D→15D→...→∞
+#   - auto-pretrains on greedy demos first (disable with --no-pretrain)
+#   - submits best per rung to leaderboard
+AI_VERSION=3 npm run ai:az:curriculum:submit
+# or partial:
+npx tsx scripts/ai/curriculum_az.ts --start 0 --end 3 --quick
 ```
 
 ## Architecture
@@ -153,18 +163,29 @@ AI_VERSION=2 npm run ai:train:submit
 - [x] Random / Greedy / MCTS agents
 - [x] Eval harness + curriculum runner
 - [x] Supabase leaderboard submission
-- [x] **v2 — AlphaZero loop:** features.ts (state→34-dim), macros.ts (39-slot
-      action index), nn.ts (pure-JS dual-head MLP w/ Adam), agent_az.ts (PUCT
-      MCTS w/ priors), iterate.ts (self-play → train → eval cycle).
-- [ ] **Curriculum integration for v2:** train at 3D, transfer to 5D, etc.;
-      submit each rung's best as `AI_AZ_v2`/`v3`/...
-- [ ] **Better policy convergence:** policy loss plateaus around 2.0 on 3D
-      (vs ~1.6 uniform-over-7-legal). Try lower lr, more games per iter,
-      gradient clipping.
-- [ ] **Parallel self-play** — Worker threads for 4× throughput.
-- [ ] **Symmetry augmentation** — if any drug-permutation symmetry holds
-      (most don't due to paraquat/find_drugs asymmetry), exploit for free
-      data. Splendor MuZero gets 120× from color permutations.
+- [x] **v2 — AlphaZero loop:** features (34-dim), macros (39-slot action
+      index), pure-JS dual-head MLP w/ Adam, PUCT MCTS w/ NN priors,
+      self-play → train → eval cycle.
+- [x] **v3 — Convergence + curriculum:**
+      - [x] Enriched features (44-dim): cop count, offer cost/delta,
+            inventory market value, in-Bronx flag, combat strength.
+      - [x] Lower LR (3e-3 → 1e-3) + global L2 gradient clipping (clip=1.0).
+      - [x] Greedy-policy bootstrap (`pretrain.ts`): trains policy head to
+            imitate the hand-rolled Greedy heuristic on ~3-4k demonstrations.
+            Drops policy loss from ~2.0 (worse than uniform) to ~0.85
+            (confidently below uniform), giving self-play a strong warm
+            start.
+      - [x] Curriculum-AZ (`curriculum_az.ts`): chains training 3D → 5D →
+            10D → 15D → 30D → 60D → 90D → endless, transferring weights
+            between rungs. Auto-pretrains before rung 0 unless disabled.
+- [ ] **Jackpot exploration:** AZ has lower variance than MCTS, doesn't find
+      the rare $100k+ runs. Try higher Dirichlet noise, temperature sampling
+      throughout the game (not just first 3 moves), or upside-shaped value.
+- [ ] **Parallel self-play** — worker_threads for 4× throughput on long
+      horizons.
+- [ ] **Skipped: symmetry augmentation** — Drug Wars events are asymmetric
+      per drug (paraquat hits weed specifically, find_drugs only finds
+      weed/ludes/speed), so no clean 120×-style multiplier exists.
 
 ## v2 validation snapshot (3-day rung)
 

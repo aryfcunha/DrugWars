@@ -11,7 +11,9 @@
     "ai:eval": "tsx scripts/ai/cli.ts eval",
     "ai:train": "tsx scripts/ai/cli.ts train",
     "ai:train:submit": "tsx scripts/ai/cli.ts train --submit",
-    "ai:az": "tsx scripts/ai/iterate.ts"
+    "ai:az": "tsx scripts/ai/iterate.ts",
+    "ai:az:curriculum": "tsx scripts/ai/curriculum_az.ts",
+    "ai:az:curriculum:submit": "tsx scripts/ai/curriculum_az.ts --submit"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.4",

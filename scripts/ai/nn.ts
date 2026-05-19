@@ -164,16 +164,18 @@ export interface AdamCfg {
   valueWeight: number;        // β
   policyWeight: number;       // α
   l2: number;                 // weight decay (applied to W matrices only)
+  clipNorm?: number;          // global L2 gradient clip (0/undefined = no clip)
 }
 
 export const DEFAULT_ADAM: AdamCfg = {
-  lr: 3e-3,
+  lr: 1e-3,            // lowered from 3e-3 (v2 policy was oscillating)
   beta1: 0.9,
   beta2: 0.999,
   eps: 1e-8,
   valueWeight: 1.0,
   policyWeight: 1.0,
   l2: 1e-5,
+  clipNorm: 1.0,       // global L2 gradient clip (v3 — adds stability)
 };
 
 interface Grads {
@@ -290,6 +292,22 @@ export function trainStep(net: Net, batch: Batch, cfg: AdamCfg = DEFAULT_ADAM): 
   for (const k of ['W1','b1','Wp','bp','Wv','bv'] as const) {
     const gg = g[k];
     for (let i = 0; i < gg.length; i++) gg[i] /= N;
+  }
+  // Global L2 gradient clipping (stabilizes training when targets are noisy)
+  if (cfg.clipNorm && cfg.clipNorm > 0) {
+    let sq = 0;
+    for (const k of ['W1','b1','Wp','bp','Wv','bv'] as const) {
+      const gg = g[k];
+      for (let i = 0; i < gg.length; i++) sq += gg[i] * gg[i];
+    }
+    const norm = Math.sqrt(sq);
+    if (norm > cfg.clipNorm) {
+      const scale = cfg.clipNorm / norm;
+      for (const k of ['W1','b1','Wp','bp','Wv','bv'] as const) {
+        const gg = g[k];
+        for (let i = 0; i < gg.length; i++) gg[i] *= scale;
+      }
+    }
   }
   net.t++;
   adamApply(net.W1, g.W1, net.m.W1, net.v.W1, net.t, cfg, true);

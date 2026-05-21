@@ -29,3 +29,4 @@ scripts/downsample_debug.png
 
 # AI training runs
 scripts/ai/runs/
+scripts/ai/analytical/runs/

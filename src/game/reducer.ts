@@ -24,7 +24,7 @@ export type Action =
   | { type: 'PAY_LOAN'; amount: number }    // Bronx-only
   | { type: 'DEPOSIT'; amount: number }     // Bronx-only
   | { type: 'WITHDRAW'; amount: number }    // Bronx-only
-  | { type: 'BUY_COAT' }                    // any time? (original was an event) — we'll allow at end of day
+  | { type: 'BUY_COAT'; qty?: number }      // any time? (original was an event) — we'll allow at end of day. qty defaults to 1.
   | { type: 'TO_LEADERBOARD' }
   | { type: 'BACK_TO_TITLE' };
 
@@ -291,12 +291,22 @@ export function reducer(state: FullState, action: Action): FullState {
       return addLog({ ...state, cash: state.cash + amt, bank: state.bank - amt }, `Withdrew $${amt}.`);
     }
     case 'BUY_COAT': {
-      if (state.cash < TRENCH_COAT_COST) return state;
+      const requestedQty = action.qty ?? 1;
+      if (requestedQty <= 0) return state;
+      // Buy as many as the player can actually afford, up to the requested qty.
+      const affordable = Math.floor(state.cash / TRENCH_COAT_COST);
+      const qty = Math.min(requestedQty, affordable);
+      if (qty <= 0) return state;
+      const totalCost = qty * TRENCH_COAT_COST;
+      const totalCapacity = qty * TRENCH_COAT_BONUS;
+      const msg = qty === 1
+        ? `Bought trench coat (+${TRENCH_COAT_BONUS} capacity)`
+        : `Bought ${qty} trench coats (+${totalCapacity} capacity, $${totalCost})`;
       return addLog({
         ...state,
-        cash: state.cash - TRENCH_COAT_COST,
-        capacity: state.capacity + TRENCH_COAT_BONUS,
-      }, `Bought trench coat (+${TRENCH_COAT_BONUS} capacity)`);
+        cash: state.cash - totalCost,
+        capacity: state.capacity + totalCapacity,
+      }, msg);
     }
     case 'TO_LEADERBOARD': return { ...state, phase: 'leaderboard' };
     case 'BACK_TO_TITLE': return makeFullInitial(state.totalDays, makeSeed(), state.mode);

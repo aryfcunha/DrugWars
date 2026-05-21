@@ -25,6 +25,7 @@ import { azAgent } from './agent_az.ts';
 import { greedyAgent, mctsAgent } from './agents.ts';
 import { submit } from './submit.ts';
 import { pretrain } from './pretrain.ts';
+import { pretrainAnalytical } from './analytical/pretrain_analytical.ts';
 
 const RUNS_DIR = resolve(import.meta.dirname, 'runs');
 const VERSION = parseInt(process.env.AI_VERSION ?? '3', 10);
@@ -85,18 +86,29 @@ async function main() {
   let prevNetPath: string | undefined = loadInit;
 
   // Pretrain step (unless explicitly disabled or a starting net was provided).
-  // Greedy demonstrations bootstrap the policy head from ~uniform CE to ~0.85,
-  // which dramatically accelerates downstream self-play convergence.
+  // Default uses the analytical teacher (combat MC + EV math + cheap_drug detection);
+  // pass --greedy-pretrain to fall back to the older greedy heuristic.
   if (!loadInit && !process.argv.includes('--no-pretrain')) {
-    console.log(`──── Pretrain (greedy demos) ────`);
+    const useGreedy = process.argv.includes('--greedy-pretrain');
     const pretrainPath = resolve(RUNS_DIR, `az-v${VERSION}-pretrain-${stamp}.json`);
     const games = QUICK ? 80 : 250;
     const epochs = QUICK ? 5 : 8;
-    await pretrain({
-      games, days: [3, 5, 10, 15], mode: 'fixed',
-      epochs, batchSize: 64, lr: 1e-3,
-      saveTo: pretrainPath,
-    });
+    if (useGreedy) {
+      console.log(`──── Pretrain (greedy demos) ────`);
+      await pretrain({
+        games, days: [3, 5, 10, 15], mode: 'fixed',
+        epochs, batchSize: 64, lr: 1e-3,
+        saveTo: pretrainPath,
+      });
+    } else {
+      console.log(`──── Pretrain (analytical demos) ────`);
+      await pretrainAnalytical({
+        games, days: [3, 5, 10, 15, 30], mode: 'fixed',
+        epochs, batchSize: 64, lr: 1e-3,
+        exploreRate: 0.15,
+        saveTo: pretrainPath,
+      });
+    }
     prevNetPath = pretrainPath;
     console.log('');
   }

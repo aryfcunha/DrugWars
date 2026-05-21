@@ -46,7 +46,13 @@ export const FEATURE_DIM =
   + 1   // inventory value / (cash + 1)  — liquidity ratio
   + 1   // can-afford-coat flag (cash >= 200)
   + 1   // in-bronx flag (banking accessible)
-  ;     // = 44
+  // ── v4 additions: analytical-strategy derived signals ──
+  + 6   // per-drug buy-attractiveness: max(0, buy_thresh - price) / midpoint
+  + 6   // per-drug sell-attractiveness: max(0, price - sell_thresh) / midpoint
+  + 1   // cheap_drug active flag: any drug with price < drug.min (0.25× multiplier event)
+  + 1   // best total profit available this turn (log-scaled)
+  + 1   // raw turns_left (capped at 1.0 for ≥60 turns)
+  ;     // = 59
 
 export function featurize(s: FullState): Float32Array {
   const f = new Float32Array(FEATURE_DIM);
@@ -143,6 +149,52 @@ export function featurize(s: FullState): Float32Array {
 
   // 23. In-Bronx flag (banking + loan shark accessible without travel)
   f[i++] = s.locationId === 'bronx' ? 1 : 0;
+
+  // ── v4 additions: analytical-strategy derived signals ──
+  // The analytical agent's dominant configuration uses buy<20th percentile and
+  // sell>40th percentile of each drug's range. These features encode the same
+  // signal directly so the small NN doesn't have to re-derive percentiles from
+  // raw price/midpoint ratios.
+  const BUY_PCT = 0.20;
+  const SELL_PCT = 0.40;
+  let cheapDrugFlag = 0;
+  let bestProfit = 0;
+  const freeCap = Math.max(0, s.capacity - used);
+  // 24. Per-drug buy attractiveness
+  for (const d of DRUGS) {
+    const p = s.market.prices[d.id];
+    if (p == null) { f[i++] = 0; continue; }
+    const buyThresh = d.min + BUY_PCT * (d.max - d.min);
+    f[i++] = Math.max(0, buyThresh - p) / ((d.min + d.max) / 2);
+  }
+  // 25. Per-drug sell attractiveness
+  for (const d of DRUGS) {
+    const p = s.market.prices[d.id];
+    if (p == null) { f[i++] = 0; continue; }
+    const sellThresh = d.min + SELL_PCT * (d.max - d.min);
+    f[i++] = Math.max(0, p - sellThresh) / ((d.min + d.max) / 2);
+  }
+  // 26. cheap_drug active flag — any drug priced below its normal min (event multiplier)
+  for (const d of DRUGS) {
+    const p = s.market.prices[d.id];
+    if (p != null && p < d.min) cheapDrugFlag = 1;
+    // also compute best total profit possible this turn (for feature 27)
+    if (p != null) {
+      const sellTarget = d.min + SELL_PCT * (d.max - d.min);
+      const perUnit = sellTarget - p;
+      if (perUnit > 0) {
+        const units = Math.min(Math.floor(s.cash / p), freeCap);
+        const profit = units * perUnit;
+        if (profit > bestProfit) bestProfit = profit;
+      }
+    }
+  }
+  f[i++] = cheapDrugFlag;
+  // 27. Best total profit available this turn (log-scaled like cash)
+  f[i++] = lg(bestProfit, 1000);
+  // 28. Raw turns_left (capped at 60 turns → 1.0)
+  const turnsLeft = endless ? Math.max(0, 120 - s.day) : Math.max(0, s.totalDays - s.day);
+  f[i++] = Math.min(1, turnsLeft / 60);
 
   // Sanity
   if (i !== FEATURE_DIM) throw new Error(`feature dim mismatch: ${i} vs ${FEATURE_DIM}`);

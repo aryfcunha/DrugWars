@@ -43,6 +43,20 @@ export function GameScreen({ state, dispatch }: Props) {
             <button className="pixel-btn pixel-btn-primary" onClick={() => setShowTravel(true)}>
               ▶ TRAVEL
             </button>
+            <button
+              className="pixel-btn"
+              disabled={state.cash < TRENCH_COAT_COST * 10}
+              onClick={() => dispatch({ type: 'BUY_COAT', qty: 10 })}
+            >
+              COAT ×10 +{TRENCH_COAT_BONUS * 10} (${TRENCH_COAT_COST * 10})
+            </button>
+            <button
+              className="pixel-btn"
+              disabled={state.cash < TRENCH_COAT_COST * 100}
+              onClick={() => dispatch({ type: 'BUY_COAT', qty: 100 })}
+            >
+              COAT ×100 +{TRENCH_COAT_BONUS * 100} (${(TRENCH_COAT_COST * 100).toLocaleString()})
+            </button>
             {isEndless && (
               <button
                 className="pixel-btn col-span-2"

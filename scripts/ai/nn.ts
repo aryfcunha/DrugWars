@@ -335,7 +335,21 @@ export function saveNet(net: Net, path: string): void {
 }
 
 export function loadNet(path: string): Net {
-  const j = JSON.parse(readFileSync(path, 'utf8'));
+  return loadNetFromString(readFileSync(path, 'utf8'));
+}
+
+export function saveNetToString(net: Net): string {
+  const arr = (a: Float32Array) => Array.from(a);
+  return JSON.stringify({
+    inDim: net.inDim, hidden: net.hidden, outPolicy: net.outPolicy, t: net.t,
+    W1: arr(net.W1), b1: arr(net.b1),
+    Wp: arr(net.Wp), bp: arr(net.bp),
+    Wv: arr(net.Wv), bv: arr(net.bv),
+  });
+}
+
+export function loadNetFromString(s: string): Net {
+  const j = JSON.parse(s);
   const n = makeNet(j.hidden);
   if (j.inDim !== n.inDim || j.outPolicy !== n.outPolicy) {
     throw new Error(`Net shape mismatch: file has in=${j.inDim} out=${j.outPolicy}, code has ${n.inDim}/${n.outPolicy}`);
